@@ -1,0 +1,522 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>ARSENAL · Contrainteligência e Proteção de Dispositivos</title>
+<meta name="description" content="O ARSENAL detecta stalkerware e spyware mercenário em celulares iOS e Android de autoridades. Análise presencial, offline e sem acesso a arquivos pessoais.">
+<meta property="og:title" content="ARSENAL · Contrainteligência e Proteção de Dispositivos">
+<meta property="og:description" content="Detecção de stalkerware e spyware em iOS e Android. Análise presencial, air-gapped e sem acesso a arquivos pessoais.">
+<meta property="og:image" content="arsenal-logo.png">
+<meta property="og:type" content="website">
+<meta name="theme-color" content="#0b1f33">
+<link rel="icon" type="image/png" href="arsenal-logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Saira+Condensed:wght@600;700;800&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+</head>
+<body>
+<style>
+  /* Layout: institutional one-pager. Navy bands (header, hero, Blind Forensics, final CTA, footer)
+     alternate with white/mist reading sections; petrol blue from the logo is the single accent.
+     Deliberate single look (navy + white), every color set explicitly. */
+  :root{
+    --navy:#0b1f33; --navy-2:#11304d; --navy-3:#081827;
+    --paper:#ffffff; --mist:#f3f6f9;
+    --ink:#0b1f33; --text:#34485c; --muted:#5f7183; --line:#dfe6ec; --line-2:#cbd6e0;
+    --petrol:#0e627e; --petrol-soft:#e8f2f5; --sky:#6cc8db;
+    --on-navy:#eef3f7; --on-navy-2:#a9bccd; --navy-line:rgba(169,188,205,.2);
+    --ok:#2e7d5b; --alert:#b83227; --wa:#25d366; --wa-dark:#1da851;
+    --fdisplay:"Saira Condensed","Arial Narrow",system-ui,sans-serif;
+    --fbody:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+    --fmono:"IBM Plex Mono",ui-monospace,"Courier New",monospace;
+    color-scheme:light;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:var(--paper);color:var(--text);font-family:var(--fbody);font-size:17px;line-height:1.6;-webkit-font-smoothing:antialiased}
+  body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:60;background:var(--navy)}
+  a{color:inherit}
+  .wrap{max-width:1180px;margin:0 auto;padding-left:max(20px,env(safe-area-inset-left,0px));padding-right:max(20px,env(safe-area-inset-right,0px))}
+  section{padding-block:88px}
+  .eyebrow{font-family:var(--fmono);font-size:13px;font-weight:600;letter-spacing:.22em;text-transform:uppercase;color:var(--petrol)}
+  .dark .eyebrow{color:var(--sky)}
+  h1,h2,h3,h4{font-family:var(--fdisplay);color:var(--ink);text-transform:uppercase;letter-spacing:.01em;margin:0;text-wrap:balance}
+  h2{font-size:clamp(34px,4.6vw,52px);line-height:1;font-weight:800;margin-top:10px}
+  h3{font-size:24px;line-height:1.05;font-weight:700}
+  .lead{font-size:19px;color:var(--muted);max-width:62ch;margin:16px 0 0}
+  .dark{background:var(--navy);color:var(--on-navy-2)}
+  .dark h1,.dark h2,.dark h3,.dark h4{color:var(--on-navy)}
+  .dark .lead{color:var(--on-navy-2)}
+  .mist{background:var(--mist)}
+  :focus-visible{outline:3px solid var(--sky);outline-offset:3px;border-radius:4px}
+
+  /* header */
+  header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:50;background:rgba(11,31,51,.96);backdrop-filter:blur(8px);border-bottom:1px solid var(--navy-line)}
+  .nav{display:flex;align-items:center;justify-content:space-between;gap:20px;height:72px}
+  .brand{display:flex;align-items:center;gap:12px;text-decoration:none}
+  .brand img{height:44px;width:auto}
+  .brand span{font-family:var(--fmono);font-size:11px;letter-spacing:.18em;color:var(--on-navy-2);text-transform:uppercase;line-height:1.3}
+  .links{display:flex;align-items:center;gap:26px}
+  .links a{font-size:15px;color:var(--on-navy-2);text-decoration:none;font-weight:500}
+  .links a:hover{color:var(--on-navy)}
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;font-family:var(--fbody);font-weight:600;font-size:16px;text-decoration:none;border-radius:8px;padding:14px 22px;border:1.5px solid transparent;cursor:pointer;transition:background .2s,border-color .2s,transform .2s}
+  .btn svg{width:20px;height:20px;flex:none}
+  .btn-primary{background:var(--petrol);color:#fff}
+  .btn-primary:hover{background:#0b5168}
+  .dark .btn-primary{background:var(--sky);color:var(--navy)}
+  .dark .btn-primary:hover{background:#8ad6e6}
+  .btn-ghost{border-color:var(--navy-line);color:var(--on-navy)}
+  .btn-ghost:hover{border-color:var(--on-navy-2)}
+  .btn-sm{padding:10px 16px;font-size:14px}
+  .menu-btn{display:none;background:none;border:1px solid var(--navy-line);color:var(--on-navy);border-radius:8px;padding:9px 14px;font:600 14px var(--fbody);cursor:pointer}
+  .mobile-nav{background:var(--navy);border-top:1px solid var(--navy-line)}
+  .mobile-nav .wrap{display:flex;flex-direction:column;padding-block:12px 20px}
+  .mobile-nav a{color:var(--on-navy);text-decoration:none;padding:12px 0;border-bottom:1px solid var(--navy-line);font-weight:500}
+
+  /* hero */
+  .hero{background:radial-gradient(110% 120% at 85% 10%,#173b5e 0%,var(--navy) 50%,var(--navy-3) 100%);padding-block:80px 96px;overflow:hidden}
+  .hero-grid{display:grid;grid-template-columns:1.15fr .85fr;gap:48px;align-items:center}
+  .hero-grid > *{min-width:0}
+  .hero h1{font-size:clamp(44px,5.6vw,74px);line-height:.92;font-weight:800;margin-top:18px}
+  .hero h1 span{display:block;color:var(--sky)}
+  .hero .lead{font-size:20px;margin-top:22px}
+  .cta-row{display:flex;flex-wrap:wrap;gap:14px;margin-top:32px}
+  .seals{display:flex;flex-wrap:wrap;gap:10px;margin-top:40px}
+  .seal{display:inline-flex;align-items:center;gap:8px;font-family:var(--fmono);font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--on-navy);border:1px solid var(--navy-line);background:rgba(255,255,255,.03);border-radius:100px;padding:8px 14px}
+  .seal svg{width:16px;height:16px;color:var(--sky)}
+
+  .visual{position:relative;display:flex;justify-content:center;padding-block:10px}
+  .phone{position:relative;width:min(290px,72vw);aspect-ratio:9/18.6;border-radius:46px;padding:11px;background:linear-gradient(155deg,#21405f,#0d2136);box-shadow:0 0 0 1.5px rgba(108,200,219,.45),0 40px 90px -30px rgba(0,0,0,.75)}
+  .screen{position:relative;height:100%;border-radius:36px;overflow:hidden;background:radial-gradient(70% 45% at 50% 48%,rgba(108,200,219,.16),transparent 70%),linear-gradient(180deg,#0a1a2a,#0c2033)}
+  .notch{position:absolute;top:10px;left:50%;transform:translateX(-50%);width:32%;height:22px;border-radius:12px;background:#050f19;z-index:3}
+  .beam{position:absolute;left:6px;right:6px;height:2px;top:20%;border-radius:2px;background:linear-gradient(90deg,transparent,var(--sky),transparent);box-shadow:0 0 16px 3px rgba(108,200,219,.6);animation:sweep 3.6s cubic-bezier(.65,0,.35,1) infinite;z-index:2}
+  .beam::after{content:"";position:absolute;left:0;right:0;top:-36px;height:36px;background:linear-gradient(180deg,transparent,rgba(108,200,219,.12))}
+  .shield{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:76px;height:76px;color:var(--sky);filter:drop-shadow(0 0 14px rgba(108,200,219,.55))}
+  .res{position:absolute;display:flex;align-items:center;gap:10px;background:#fff;color:var(--ink);border-radius:10px;padding:10px 14px;font-size:13.5px;font-weight:600;box-shadow:0 18px 40px -16px rgba(0,0,0,.6);max-width:230px;line-height:1.3}
+  .res small{display:block;font-family:var(--fmono);font-size:10.5px;color:var(--muted);font-weight:500;letter-spacing:.06em;text-transform:uppercase}
+  .res i{width:26px;height:26px;border-radius:50%;flex:none;display:grid;place-items:center;background:rgba(46,125,91,.12);color:var(--ok);font-style:normal;font-weight:700}
+  .res.a{top:16%;left:0}
+  .res.b{bottom:18%;right:0}
+  .res.c{top:52%;left:2%;}
+  @keyframes sweep{0%{top:14%}48%{top:84%}50%{top:84%}98%{top:14%}100%{top:14%}}
+
+  /* threat */
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-top:44px}
+  .grid2 > *,.grid3 > *,.grid4 > *{min-width:0}
+  .card{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:30px}
+  .mist .card{border-color:var(--line-2)}
+  .tag{font-family:var(--fmono);font-size:12px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--petrol)}
+  .card h3{margin-top:10px}
+  .card p{margin:12px 0 0}
+  ul.ticks{list-style:none;padding:0;margin:16px 0 0;display:grid;gap:10px}
+  ul.ticks li{position:relative;padding-left:22px;color:var(--ink)}
+  ul.ticks li::before{content:"";position:absolute;left:0;top:.62em;width:8px;height:8px;border-radius:2px;background:var(--petrol)}
+  ul.ticks.red li::before{background:var(--alert)}
+
+  /* comparison */
+  .cmp{margin-top:44px;border:1px solid var(--line-2);border-radius:12px;overflow:hidden;background:var(--paper)}
+  .cmp-row{display:grid;grid-template-columns:1fr 1fr}
+  .cmp-row > div{padding:20px 26px;border-top:1px solid var(--line)}
+  .cmp-row > div + div{border-left:1px solid var(--line);background:rgba(14,98,126,.035)}
+  .cmp-head > div{border-top:0;font-family:var(--fmono);font-size:12.5px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;padding-block:14px}
+  .cmp-head > div:first-child{color:var(--alert);background:rgba(184,50,39,.05)}
+  .cmp-head > div + div{color:var(--petrol);background:rgba(14,98,126,.08)}
+  .cmp h4{font-size:21px;font-weight:700}
+  .cmp-row > div:first-child h4{color:#8c2f25}
+  .cmp p{margin:4px 0 0;font-size:16px;color:var(--muted)}
+
+  /* blind forensics */
+  .bigline{font-family:var(--fdisplay);font-weight:800;text-transform:uppercase;font-size:clamp(28px,3.6vw,42px);line-height:1.05;color:var(--on-navy);margin:22px 0 0}
+  .bigline span{color:var(--sky)}
+  .dark .card{background:var(--navy-2);border-color:var(--navy-line)}
+  .dark .card .tag{color:var(--sky)}
+  .dark .card.block .tag{color:#f08f80}
+  .dark ul.ticks li{color:var(--on-navy)}
+  .dark ul.ticks li::before{background:var(--sky)}
+  .dark ul.ticks.red li::before{background:#e0675a}
+  .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-top:28px}
+  .guar{border-top:1px solid var(--navy-line);padding-top:18px}
+  .guar b{display:block;font-family:var(--fmono);font-size:12.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--sky);font-weight:600}
+  .guar p{margin:8px 0 0;color:var(--on-navy-2)}
+
+  /* steps */
+  .steps{list-style:none;padding:0;margin:48px 0 0;display:grid;grid-template-columns:repeat(5,1fr);gap:22px;counter-reset:s}
+  .steps li{position:relative;padding-top:58px}
+  .steps li::before{counter-increment:s;content:"0" counter(s);position:absolute;top:0;left:0;font-family:var(--fdisplay);font-weight:800;font-size:40px;line-height:1;color:var(--petrol)}
+  .steps li::after{content:"";position:absolute;top:20px;left:58px;right:-14px;height:2px;background:var(--line-2)}
+  .steps li:last-child::after{display:none}
+  .steps h3{font-size:22px}
+  .steps p{margin:8px 0 0;font-size:16px;color:var(--muted)}
+  .note{margin-top:30px;font-family:var(--fmono);font-size:13.5px;color:var(--muted)}
+  .note b{color:var(--petrol)}
+  .results{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-top:40px}
+  .result{border-radius:12px;padding:28px;border:1.5px solid}
+  .result.ok{border-color:rgba(46,125,91,.45);background:rgba(46,125,91,.05)}
+  .result.bad{border-color:rgba(184,50,39,.45);background:rgba(184,50,39,.04)}
+  .result h3{display:flex;align-items:center;gap:10px}
+  .result.ok h3{color:var(--ok)} .result.bad h3{color:var(--alert)}
+  .result h3::before{content:"";width:12px;height:12px;border-radius:50%;background:currentColor}
+  .result p{margin:10px 0 0}
+
+  /* tech */
+  .pil{background:var(--paper);border:1px solid var(--line-2);border-radius:12px;padding:28px}
+  .pil .ic,.spec .ic{width:40px;height:40px;color:var(--petrol)}
+  .pil h3{margin-top:16px}
+  .pil p{margin:10px 0 0}
+  .plat{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-top:24px}
+  .plat .card{display:flex;flex-direction:column}
+  .plat .head{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap}
+
+  /* specs */
+  .grid4{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-top:44px}
+  .spec{display:flex;gap:20px;border:1px solid var(--line);border-radius:12px;padding:28px}
+  .spec .ic{flex:none}
+  .spec p{margin:8px 0 0}
+
+  /* compliance */
+  .comp{display:grid;grid-template-columns:1fr 1fr;gap:28px;margin-top:44px;align-items:start}
+  .comp > *{min-width:0}
+  .laws{display:grid;gap:14px}
+  .law{border:1px solid var(--line-2);border-left:4px solid var(--petrol);border-radius:10px;padding:18px 22px;background:var(--paper)}
+  .law h4{font-size:20px;font-weight:700}
+  .law p{margin:6px 0 0;font-size:16px;color:var(--muted)}
+  .mani{border:1px solid var(--line-2);border-radius:10px;background:#fbfcfd;padding:22px;font-family:var(--fmono)}
+  .mani .mh{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;padding-bottom:12px;border-bottom:1px solid var(--line);font-size:13.5px}
+  .mani .mh b{color:var(--petrol)} .mani .mh span{color:#9a6b12;font-size:12px;letter-spacing:.1em}
+  .mani .row{margin-top:14px}
+  .mani .f{color:var(--ink);font-size:14px}
+  .mani .hx{color:var(--muted);font-size:12px;word-break:break-all;margin-top:2px}
+  .mani .mf{margin-top:16px;padding-top:12px;border-top:1px solid var(--line);color:var(--ok);font-size:13px}
+  .mani .ex{margin-top:6px;font-size:11px;color:var(--muted);letter-spacing:.08em;text-transform:uppercase}
+
+  /* audience */
+  .chips{display:flex;flex-wrap:wrap;gap:10px;margin-top:32px}
+  .chip{border:1px solid var(--line-2);background:var(--paper);border-radius:8px;padding:9px 14px;font-size:15px;color:var(--ink)}
+  .uses{display:grid;grid-template-columns:repeat(5,1fr);gap:16px;margin-top:28px}
+  .uses > *{min-width:0}
+  .use{border:1px solid var(--line-2);background:var(--paper);border-radius:12px;padding:22px}
+  .use .ic{width:32px;height:32px;color:var(--petrol)}
+  .use h4{font-size:19px;font-weight:700;margin-top:12px}
+  .use p{margin:6px 0 0;font-size:15px;color:var(--muted)}
+  .sub-lbl{font-family:var(--fmono);font-size:12.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);margin-top:40px}
+
+  /* final cta */
+  .final{background:radial-gradient(100% 140% at 15% 0%,#173b5e 0%,var(--navy) 55%,var(--navy-3) 100%)}
+  .final-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:48px;align-items:center}
+  .final-grid > *{min-width:0}
+  .next{list-style:none;padding:0;margin:28px 0 0;display:grid;gap:14px}
+  .next li{display:flex;gap:14px;align-items:center;color:var(--on-navy);font-size:18px}
+  .next b{flex:none;width:36px;height:36px;border-radius:8px;display:grid;place-items:center;font-family:var(--fmono);font-size:13px;color:var(--sky);border:1px solid rgba(108,200,219,.4);background:rgba(108,200,219,.08)}
+  .contact-card{background:var(--navy-2);border:1px solid var(--navy-line);border-radius:14px;padding:32px}
+  .contact-card h3{font-size:26px}
+  .contact-card p{margin:8px 0 0}
+  .num{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-top:22px}
+  .num output{font-family:var(--fmono);font-size:26px;color:var(--on-navy);letter-spacing:.02em;user-select:all}
+  .copy{background:none;border:1px solid var(--navy-line);color:var(--on-navy-2);border-radius:6px;padding:6px 12px;font:500 13px var(--fbody);cursor:pointer}
+  .copy:hover{color:var(--on-navy);border-color:var(--on-navy-2)}
+  .btn-wa{background:var(--wa);color:#073b1f;margin-top:22px;width:100%}
+  .btn-wa:hover{background:#3ee27e}
+
+  footer{background:var(--navy-3);color:var(--on-navy-2);padding-block:36px calc(36px + env(safe-area-inset-bottom,0px))}
+  .foot{display:flex;justify-content:space-between;align-items:center;gap:20px;flex-wrap:wrap;font-size:14px}
+  .foot img{height:40px;width:auto}
+  .foot .fl{display:flex;align-items:center;gap:14px}
+
+  /* floating whatsapp */
+  .wa-float{position:fixed;z-index:70;right:calc(22px + env(safe-area-inset-right,0px));bottom:calc(22px + env(safe-area-inset-bottom,0px));display:flex;align-items:center;gap:10px;background:var(--wa);color:#073b1f;text-decoration:none;border-radius:100px;padding:12px 20px 12px 14px;font-weight:700;font-size:15px;box-shadow:0 14px 34px -10px rgba(7,59,31,.55),0 0 0 4px rgba(37,211,102,.18);transition:transform .2s,box-shadow .2s}
+  .wa-float:hover{transform:translateY(-2px);box-shadow:0 18px 40px -10px rgba(7,59,31,.6),0 0 0 6px rgba(37,211,102,.22)}
+  .wa-float svg{width:30px;height:30px;flex:none}
+
+  @media (max-width:980px){
+    .hero-grid,.final-grid,.comp{grid-template-columns:1fr}
+    .steps{grid-template-columns:1fr 1fr;row-gap:36px}
+    .steps li::after{display:none}
+    .uses{grid-template-columns:repeat(3,1fr)}
+    .links{display:none}
+    .menu-btn{display:inline-block}
+  }
+  @media (max-width:700px){
+    section{padding-block:64px}
+    body{font-size:16px}
+    .grid2,.grid3,.grid4,.results,.plat{grid-template-columns:1fr}
+    .cmp-row{grid-template-columns:1fr}
+    .cmp-row > div + div{border-left:0}
+    .cmp-head{display:none}
+    .cmp-row > div:first-child::before{content:"Perícia tradicional";display:block;font-family:var(--fmono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--alert);margin-bottom:4px}
+    .cmp-row > div + div::before{content:"ARSENAL";display:block;font-family:var(--fmono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--petrol);margin-bottom:4px}
+    .steps{grid-template-columns:1fr}
+    .uses{grid-template-columns:1fr 1fr}
+    .brand span{display:none}
+    .nav .btn-sm{display:none}
+    .res.c{display:none}
+    .wa-float span{display:none}
+    .wa-float{padding:14px}
+  }
+  @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}.beam{animation:none;top:50%}}
+</style>
+
+<header class="top">
+  <div class="wrap nav">
+    <a class="brand" href="#inicio" aria-label="ARSENAL, início">
+      <img src="arsenal-logo.png" alt="ARSENAL Forensics">
+      <span>Contrainteligência<br>Proteção de dispositivos</span>
+    </a>
+    <nav class="links" aria-label="Seções">
+      <a href="#solucao">Solução</a>
+      <a href="#diferencial">Blind Forensics</a>
+      <a href="#como-funciona">Como funciona</a>
+      <a href="#tecnologia">Tecnologia</a>
+      <a href="#conformidade">Conformidade</a>
+      <a class="btn btn-primary btn-sm" href="https://wa.me/5561999090807?text=Ol%C3%A1%21%20Gostaria%20de%20agendar%20uma%20apresenta%C3%A7%C3%A3o%20reservada%20do%20ARSENAL." target="_blank" rel="noopener">Solicitar apresentação</a>
+    </nav>
+    <button class="menu-btn" id="menuBtn" aria-expanded="false" aria-controls="mobileNav">Menu</button>
+  </div>
+  <div class="mobile-nav" id="mobileNav" hidden>
+    <div class="wrap">
+      <a href="#solucao">Solução</a>
+      <a href="#diferencial">Blind Forensics</a>
+      <a href="#como-funciona">Como funciona</a>
+      <a href="#tecnologia">Tecnologia</a>
+      <a href="#conformidade">Conformidade</a>
+      <a href="#contato">Contato</a>
+    </div>
+  </div>
+</header>
+
+<main id="inicio">
+  <!-- HERO -->
+  <section class="hero dark">
+    <div class="wrap hero-grid">
+      <div>
+        <div class="eyebrow">Tactical Forensic Appliance · Contrainteligência</div>
+        <h1>Seu celular protegido <span>contra espionagem.</span></h1>
+        <p class="lead">O ARSENAL detecta stalkerware e spyware mercenário em celulares iOS e Android de autoridades. A análise é presencial, offline e sem que o operador acesse nenhum arquivo pessoal.</p>
+        <div class="cta-row">
+          <a class="btn btn-primary" href="https://wa.me/5561999090807?text=Ol%C3%A1%21%20Gostaria%20de%20agendar%20uma%20apresenta%C3%A7%C3%A3o%20reservada%20do%20ARSENAL." target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z"/></svg>Solicitar apresentação reservada</a>
+          <a class="btn btn-ghost" href="#como-funciona">Ver como funciona</a>
+        </div>
+        <div class="seals">
+          <span class="seal"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 7h16v10H4z"/><path d="M2 4l20 16"/></svg>100% air-gapped</span>
+          <span class="seal"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 12s3.5-7 10-7 10 7 10 7"/><path d="M2 2l20 20"/><circle cx="12" cy="12" r="3"/></svg>Zero acesso do analista</span>
+          <span class="seal"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v18M5 21h14M5 7h14"/><path d="M5 7l-3 7a3 3 0 0 0 6 0zM19 7l-3 7a3 3 0 0 0 6 0z"/></svg>Salvaguarda institucional</span>
+          <span class="seal"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2 4 5v6c0 5 3.4 8.5 8 11 4.6-2.5 8-6 8-11V5l-8-3z"/><path d="M9 12l2 2 4-4"/></svg>Cadeia de custódia</span>
+        </div>
+      </div>
+      <div class="visual" aria-hidden="true">
+        <div class="phone"><div class="screen"><div class="notch"></div><div class="beam"></div>
+          <svg class="shield" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3"><path d="M12 2 4 5v6c0 5 3.4 8.5 8 11 4.6-2.5 8-6 8-11V5l-8-3z"/><path d="M9 12l2 2 4-4" stroke-width="1.6"/></svg>
+        </div></div>
+        <div class="res a"><i>✓</i><div><small>Perfis MDM</small>Nenhum perfil clandestino</div></div>
+        <div class="res c"><i>✓</i><div><small>Acessibilidade</small>Sem serviços abusivos</div></div>
+        <div class="res b"><i>✓</i><div><small>Conexões C2</small>Nenhum servidor hostil</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- THREAT -->
+  <section id="solucao">
+    <div class="wrap">
+      <div class="eyebrow">O desafio</div>
+      <h2>A ameaça invisível</h2>
+      <p class="lead">Lideranças públicas e magistrados de cortes estratégicas tornaram-se alvos prioritários de ferramentas comerciais de espionagem. Na maioria dos casos, a vítima só descobre tarde demais.</p>
+      <div class="grid2">
+        <div class="card">
+          <div class="tag">Mais comum</div>
+          <h3>Stalkerware comercial</h3>
+          <p>Instalado por quem teve acesso físico ao aparelho por poucos minutos. Barato e acessível.</p>
+          <ul class="ticks"><li>Leitura de mensagens e chamadas</li><li>Localização em tempo real</li><li>Ativação remota do microfone</li></ul>
+        </div>
+        <div class="card">
+          <div class="tag">Mais sofisticado</div>
+          <h3>Spyware mercenário</h3>
+          <p>Pegasus, Predator, Candiru. Invasões Zero-Click silenciosas, sem nenhuma interação da autoridade.</p>
+          <ul class="ticks"><li>Escuta ambiente pelo microfone</li><li>Captura de telas e conversas</li><li>Extração contínua de rotinas sigilosas</li></ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- COMPARISON -->
+  <section class="mist">
+    <div class="wrap">
+      <div class="eyebrow">Proposta de valor</div>
+      <h2>Análise presencial, sem apreensão</h2>
+      <p class="lead">A resposta vem no próprio gabinete, e o aparelho volta para a autoridade ao fim da inspeção.</p>
+      <div class="cmp" role="table" aria-label="Perícia tradicional comparada ao ARSENAL">
+        <div class="cmp-row cmp-head" role="row"><div role="columnheader">Perícia tradicional</div><div role="columnheader">Resposta ARSENAL</div></div>
+        <div class="cmp-row" role="row"><div role="cell"><h4>Apreensão por semanas</h4><p>Inviabiliza agenda, julgamentos e deliberações.</p></div><div role="cell"><h4>Análise no gabinete, em minutos</h4><p>Inspeção presencial com devolução imediata do aparelho.</p></div></div>
+        <div class="cmp-row" role="row"><div role="cell"><h4>Acesso amplo aos arquivos</h4><p>Fotos, votos e mensagens ficam visíveis ao perito.</p></div><div role="cell"><h4>Zero acesso humano a arquivos</h4><p>O operador não visualiza fotos, conversas ou pastas.</p></div></div>
+        <div class="cmp-row" role="row"><div role="cell"><h4>Risco de devassa</h4><p>Extrações genéricas expõem contatos e assuntos sigilosos.</p></div><div role="cell"><h4>Salvaguarda por arquitetura</h4><p>O sistema busca só a ameaça; dados de gabinete ficam lacrados.</p></div></div>
+        <div class="cmp-row" role="row"><div role="cell"><h4>Demora no resultado</h4><p>Meses até o laudo atrasam medidas de proteção.</p></div><div role="cell"><h4>Relatório imediato</h4><p>Score de risco e artefatos gerados no ato da inspeção.</p></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- BLIND FORENSICS -->
+  <section class="dark" id="diferencial">
+    <div class="wrap">
+      <div class="eyebrow">O diferencial</div>
+      <h2>Blind Forensics</h2>
+      <p class="bigline">Vê o ataque. <span>Nunca o seu conteúdo.</span></p>
+      <div class="grid2">
+        <div class="card block">
+          <div class="tag">O analista nunca tem acesso</div>
+          <ul class="ticks red"><li>Galeria de fotos, mídias e vídeos</li><li>Documentos, votos, despachos e minutas</li><li>Conversas de WhatsApp, Signal e Telegram</li><li>Agenda, telefonemas e contatos</li><li>Arquivos confidenciais e notas de gabinete</li></ul>
+        </div>
+        <div class="card">
+          <div class="tag">O ARSENAL audita</div>
+          <ul class="ticks"><li>Binários maliciosos, injeções e dylibs anômalas</li><li>Perfis clandestinos de gestão remota (MDM)</li><li>Hooks de acessibilidade e serviços abusivos</li><li>Conexões com servidores C2 hostis</li><li>Hashes e integridade do sistema operacional</li></ul>
+        </div>
+      </div>
+      <div class="grid3">
+        <div class="guar"><b>Sem explorador de arquivos</b><p>A interface não tem navegador de pastas nem leitor de mídia. Não existe meio técnico para abrir arquivos pessoais.</p></div>
+        <div class="guar"><b>Camada de baixo nível</b><p>O motor examina metadados técnicos, integridade de pacotes e registros do sistema, ignorando os dados do usuário.</p></div>
+        <div class="guar"><b>Auditoria presencial</b><p>A autoridade acompanha a varredura na tela. O relatório atesta a ameaça sem transcrever dados sigilosos.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- HOW IT WORKS -->
+  <section id="como-funciona">
+    <div class="wrap">
+      <div class="eyebrow">Procedimento</div>
+      <h2>Como funciona</h2>
+      <p class="lead">Cinco etapas, todas dentro da estação ARSENAL e sem conexão externa.</p>
+      <ol class="steps">
+        <li><h3>Extração</h3><p>O aparelho é conectado e os dados técnicos vão para um cofre criptografado.</p></li>
+        <li><h3>Análise</h3><p>O motor varre o cofre e isola os artefatos da ameaça.</p></li>
+        <li><h3>IA local</h3><p>Correlaciona os indícios e responde ao operador, offline.</p></li>
+        <li><h3>Relatório</h3><p>Limpo ou comprometido, com score de risco de 0 a 10.</p></li>
+        <li><h3>Custódia</h3><p>Exportação com hash SHA-256, data e usuário.</p></li>
+      </ol>
+      <p class="note"><b>Sem root, sem jailbreak, sem alteração de firmware.</b> Nenhum dado do usuário é modificado.</p>
+      <div class="results">
+        <div class="result ok"><h3>Limpo</h3><p>Nenhum indício de comprometimento no aparelho. O relatório traz recomendações de higiene de segurança.</p></div>
+        <div class="result bad"><h3>Comprometido</h3><p>Artefatos da ameaça confirmados: via de contaminação, logs de instalação e família do spyware, com orientação para neutralizar.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TECH -->
+  <section class="mist" id="tecnologia">
+    <div class="wrap">
+      <div class="eyebrow">Tecnologia</div>
+      <h2>Air-gapped e IA local</h2>
+      <div class="grid3" style="margin-top:44px">
+        <div class="pil"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 7h16v10H4z"/><path d="M2 4l20 16"/></svg><h3>Isolamento total</h3><p>Sem internet durante toda a análise. Nenhuma telemetria, nenhuma nuvem, nenhum tráfego de rede.</p></div>
+        <div class="pil"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="7" y="7" width="10" height="10" rx="2"/><path d="M9 2v3M15 2v3M9 19v3M15 19v3M2 9h3M2 15h3M19 9h3M19 15h3"/></svg><h3>IA local na GPU</h3><p>Modelo embarcado na estação. IoC Hunter com mais de 150 famílias de ameaças e score de risco de 0.0 a 10.0.</p></div>
+        <div class="pil"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 2 4 5v6c0 5 3.4 8.5 8 11 4.6-2.5 8-6 8-11V5l-8-3z"/><path d="M9 12l2 2 4-4"/></svg><h3>Inspeção não invasiva</h3><p>Leitura pelos canais de diagnóstico do fabricante, com espelhamento da tela ao vivo.</p></div>
+      </div>
+      <div class="plat">
+        <div class="card"><div class="head"><h3>Apple iOS</h3><span class="tag">16–18+ · sem jailbreak</span></div>
+          <ul class="ticks"><li>Perfis MDM e certificados raiz clandestinos</li><li>Binários, injeções e dylibs anômalas</li><li>Vetores zero-click, sysdiagnose e shutdown.log</li></ul></div>
+        <div class="card"><div class="head"><h3>Google Android</h3><span class="tag">9–15+ · sem root</span></div>
+          <ul class="ticks"><li>Serviços de acessibilidade abusivos</li><li>Sobreposições de tela (overlays)</li><li>Acesso a microfone e câmera por app, APKs de sideload</li></ul></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- STATION -->
+  <section>
+    <div class="wrap">
+      <div class="eyebrow">O appliance</div>
+      <h2>A estação ARSENAL</h2>
+      <div class="grid4">
+        <div class="spec"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="2" y="7" width="20" height="13" rx="2"/><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M2 13h20"/></svg><div><h3>Fator de forma</h3><p>Maleta tática reforçada para campo ou estação fixa de gabinete.</p></div></div>
+        <div class="spec"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M6 9l3 3-3 3M12 15h5"/></svg><div><h3>Sistema endurecido</h3><p>Linux hardened em modo quiosque, sem portas abertas nem compiladores em execução.</p></div></div>
+        <div class="spec"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4M12 15v2"/></svg><div><h3>Cofre criptografado</h3><p>SSD NVMe com LUKS2 e banco de dados SQLCipher (AES-256).</p></div></div>
+        <div class="spec"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 2 4 5v6c0 5 3.4 8.5 8 11 4.6-2.5 8-6 8-11V5l-8-3z"/><path d="M12 8v4M12 15h.01"/></svg><div><h3>HWID e anti-adulteração</h3><p>Amarração criptográfica à CPU e à placa-mãe, com bloqueio automático em caso de violação.</p></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- COMPLIANCE -->
+  <section class="mist" id="conformidade">
+    <div class="wrap">
+      <div class="eyebrow">Conformidade</div>
+      <h2>Cadeia de custódia</h2>
+      <p class="lead">Quando a autoridade decide levar o caso adiante, a evidência é exportada de forma rastreável e verificável.</p>
+      <div class="comp">
+        <div class="laws">
+          <div class="law"><h4>CPP · Arts. 158-A a 158-F</h4><p>Rastreabilidade de todas as etapas da cadeia de custódia do vestígio digital.</p></div>
+          <div class="law"><h4>ISO/IEC 27037</h4><p>Diretrizes internacionais de identificação, coleta, aquisição e preservação de evidência digital.</p></div>
+          <div class="law"><h4>CF Art. 5º, X e XII · Lei 12.527</h4><p>Inviolabilidade das comunicações e salvaguarda de informações sigilosas.</p></div>
+        </div>
+        <div class="mani" aria-label="Exemplo de manifesto de integridade">
+          <div class="mh"><b>catalogo_hashes.sha256</b><span>+300 hashes / sessão</span></div>
+          <div class="row"><div class="f">sysdiagnose.tar.gz</div><div class="hx">f0f61823b65ee123937564323f0d9508d632c8b547c116945f49af5c44fe9055</div></div><div class="row"><div class="f">dumpsys_packages.txt</div><div class="hx">4351b9f1cf55db4279278cd5e320b9624b3dcc17de7493c2aca2393721ff43cd</div></div><div class="row"><div class="f">timeline.csv</div><div class="hx">cfd860af38382480ba4b98a2af54fdb63ad40520eb8f1df5566a93577149ed0e</div></div><div class="row"><div class="f">relatorio_analise.pdf</div><div class="hx">03abf29a5fa8bef0c16cf7741e3dfc4b9b55b3226efe67acf7c85a9032c780f3</div></div>
+          <div class="mf">✓ registro: operador · data · hora · integridade verificada</div>
+          <div class="ex">Exemplo ilustrativo</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- AUDIENCE -->
+  <section>
+    <div class="wrap">
+      <div class="eyebrow">Aplicação</div>
+      <h2>Para quem e quando</h2>
+      <div class="chips">
+        <span class="chip">Cortes Superiores</span><span class="chip">Procuradoria-Geral e GAECO</span><span class="chip">Gabinete de Segurança Institucional</span><span class="chip">ABIN</span><span class="chip">Polícias Judiciárias</span><span class="chip">Forças Armadas</span><span class="chip">Conselhos de estatais estratégicas</span>
+      </div>
+      <div class="sub-lbl">Quando usar</div>
+      <div class="uses">
+        <div class="use"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="8"/><path d="M12 8v4l3 2"/></svg><h4>Rotina periódica</h4><p>Check-up de segurança do aparelho.</p></div>
+        <div class="use"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></svg><h4>Pré-viagem</h4><p>Antes e depois de viagens sensíveis.</p></div>
+        <div class="use"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4"/></svg><h4>Pré-evento</h4><p>Antes de reunião ou deliberação crítica.</p></div>
+        <div class="use"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 3 2 20h20L12 3z"/><path d="M12 10v4M12 17h.01"/></svg><h4>Sob suspeita</h4><p>Comportamento estranho do aparelho.</p></div>
+        <div class="use"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="9" cy="8" r="3"/><path d="M3 20c0-3 3-5 6-5s6 2 6 5"/><path d="M16 11l2 2 4-4"/></svg><h4>Troca de entorno</h4><p>Nova equipe com acesso ao aparelho.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FINAL CTA -->
+  <section class="final dark" id="contato">
+    <div class="wrap final-grid">
+      <div>
+        <div class="eyebrow">Próximos passos</div>
+        <h2>Homologação e prova de conceito</h2>
+        <p class="lead">Veja o ARSENAL funcionando em uma demonstração presencial, em ambiente restrito, para a alta administração e a equipe de segurança orgânica.</p>
+        <ol class="next">
+          <li><b>01</b>Demonstração tática presencial</li>
+          <li><b>02</b>Prova de conceito (PoC) no órgão</li>
+          <li><b>03</b>Rotina periódica e capacitação da equipe</li>
+        </ol>
+      </div>
+      <div class="contact-card">
+        <h3>Solicite uma apresentação reservada</h3>
+        <p>Atendimento exclusivo para órgãos públicos e entidades estratégicas.</p>
+        <div class="num"><output id="phone">(61) 99909-0807</output><button class="copy" id="copyBtn" type="button">Copiar número</button></div>
+        <a class="btn btn-wa" href="https://wa.me/5561999090807?text=Ol%C3%A1%21%20Gostaria%20de%20agendar%20uma%20apresenta%C3%A7%C3%A3o%20reservada%20do%20ARSENAL." target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z"/></svg>Falar pelo WhatsApp</a>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap foot">
+    <div class="fl"><img src="arsenal-logo.png" alt="ARSENAL Forensics"><span>Contrainteligência e Proteção de Dispositivos</span></div>
+    <span>© 2026 ARSENAL · Uso institucional</span>
+  </div>
+</footer>
+
+<a class="wa-float" href="https://wa.me/5561999090807?text=Ol%C3%A1%21%20Gostaria%20de%20agendar%20uma%20apresenta%C3%A7%C3%A3o%20reservada%20do%20ARSENAL." target="_blank" rel="noopener" aria-label="Falar com o ARSENAL pelo WhatsApp"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z"/></svg><span>Fale conosco</span></a>
+
+<script>
+  (function(){
+    var btn=document.getElementById('menuBtn'), nav=document.getElementById('mobileNav');
+    btn.addEventListener('click',function(){var open=nav.hidden;nav.hidden=!open;btn.setAttribute('aria-expanded',String(open));btn.textContent=open?'Fechar':'Menu';});
+    nav.addEventListener('click',function(e){if(e.target.tagName==='A'){nav.hidden=true;btn.setAttribute('aria-expanded','false');btn.textContent='Menu';}});
+    var c=document.getElementById('copyBtn'), num=document.getElementById('phone');
+    c.addEventListener('click',function(){
+      var done=function(){c.textContent='Número copiado';setTimeout(function(){c.textContent='Copiar número';},2200);};
+      var sel=function(){var r=document.createRange();r.selectNodeContents(num);var s=getSelection();s.removeAllRanges();s.addRange(r);c.textContent='Selecionado, use Ctrl+C';};
+      try{navigator.clipboard.writeText('61999090807').then(done,sel);}catch(e){sel();}
+    });
+  })();
+</script>
+
+</body></html>
